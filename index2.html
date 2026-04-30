@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>secret base♡ – 共享日记基地</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23f6d6de'/%3E%3Ctext x='50%25' y='56%25' text-anchor='middle' font-size='38'%3E%E2%99%A1%3C/text%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --ink: #4e3844;
+      --soft-ink: #795f70;
+      --muted: #9a7c8c;
+      --paper: rgba(255, 250, 246, 0.58);
+      --paper-strong: rgba(255, 253, 250, 0.78);
+      --line: rgba(255, 255, 255, 0.54);
+      --shadow: 0 18px 50px rgba(103, 69, 92, 0.18);
+      --shadow-hover: 0 24px 68px rgba(92, 58, 86, 0.25);
+      --radius-card: 8px;
+      --max-width: 1180px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+        "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", Arial, sans-serif;
+      background:
+        radial-gradient(circle at 10% 16%, rgba(255, 235, 202, 0.56) 0 18rem, transparent 19rem),
+        radial-gradient(circle at 86% 10%, rgba(226, 207, 255, 0.48) 0 17rem, transparent 18rem),
+        radial-gradient(circle at 78% 78%, rgba(255, 205, 220, 0.42) 0 19rem, transparent 20rem),
+        linear-gradient(135deg, #f3e2c9 0%, #eec7d1 44%, #cbc3ea 100%);
+      overflow-x: hidden;
+    }
+
+    body::before {
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      content: "";
+      background-image:
+        radial-gradient(circle, rgba(255, 255, 255, 0.42) 0 1px, transparent 1.5px),
+        radial-gradient(circle, rgba(255, 244, 214, 0.48) 0 1px, transparent 1.5px);
+      background-position: 0 0, 24px 32px;
+      background-size: 54px 54px, 78px 78px;
+      opacity: 0.56;
+    }
+
+    body::after {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      content: "";
+      background: rgba(76, 43, 67, 0.08);
+    }
+
+    .page {
+      position: relative;
+      width: min(100% - 32px, var(--max-width));
+      margin: 0 auto;
+      padding: clamp(36px, 7vw, 82px) 0 42px;
+    }
+
+    .ambient {
+      position: fixed;
+      z-index: -1;
+      color: rgba(255, 255, 255, 0.64);
+      text-shadow: 0 8px 24px rgba(114, 78, 104, 0.18);
+      pointer-events: none;
+      user-select: none;
+      animation: floatGently 8s ease-in-out infinite;
+    }
+
+    .ambient--one {
+      top: 12%;
+      left: 7%;
+      font-size: clamp(2rem, 5vw, 4.6rem);
+    }
+
+    .ambient--two {
+      top: 18%;
+      right: 9%;
+      font-size: clamp(1.8rem, 4vw, 3.8rem);
+      animation-delay: -2.4s;
+    }
+
+    .ambient--three {
+      right: 13%;
+      bottom: 16%;
+      font-size: clamp(1.6rem, 4vw, 3.5rem);
+      animation-delay: -4.8s;
+    }
+
+    .hero {
+      display: grid;
+      gap: 18px;
+      max-width: 760px;
+      margin: 0 auto 34px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: fit-content;
+      margin: 0 auto;
+      padding: 8px 13px;
+      color: #70485e;
+      font-size: 0.88rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      background: rgba(255, 255, 255, 0.36);
+      border: 1px solid rgba(255, 255, 255, 0.56);
+      border-radius: 999px;
+      box-shadow: 0 10px 30px rgba(112, 72, 94, 0.12);
+      backdrop-filter: blur(14px);
+    }
+
+    h1 {
+      margin: 0;
+      color: #513243;
+      font-size: clamp(3.25rem, 11vw, 7.5rem);
+      line-height: 0.92;
+      letter-spacing: 0;
+      text-wrap: balance;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: #6a4b5e;
+      font-size: clamp(1.02rem, 2.4vw, 1.36rem);
+      font-weight: 700;
+    }
+
+    .description {
+      max-width: 630px;
+      margin: 0 auto;
+      color: var(--soft-ink);
+      font-size: clamp(0.98rem, 1.9vw, 1.12rem);
+      line-height: 1.85;
+    }
+
+    .mood-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 2px;
+    }
+
+    .mood-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 38px;
+      padding: 8px 14px;
+      color: #69485b;
+      font-size: 0.92rem;
+      font-weight: 700;
+      background: rgba(255, 255, 255, 0.44);
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      border-radius: 999px;
+      backdrop-filter: blur(16px);
+    }
+
+    .member-section {
+      margin-top: 22px;
+    }
+
+    .section-heading {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding: 0 4px;
+    }
+
+    .section-heading h2 {
+      margin: 0;
+      color: #503241;
+      font-size: clamp(1.32rem, 3vw, 2rem);
+      letter-spacing: 0;
+    }
+
+    .section-heading p {
+      margin: 0;
+      color: var(--soft-ink);
+      font-size: 0.96rem;
+    }
+
+    .member-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 252px), 1fr));
+      gap: 18px;
+    }
+
+    .member-card {
+      position: relative;
+      display: grid;
+      gap: 16px;
+      min-height: 260px;
+      padding: 22px;
+      overflow: hidden;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(1.2);
+      transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+    }
+
+    .member-card::before {
+      position: absolute;
+      top: 0;
+      right: 18px;
+      width: 54px;
+      height: 3px;
+      content: "";
+      background: var(--accent, #e7a7bc);
+      border-radius: 999px;
+      opacity: 0.82;
+    }
+
+    .member-card:hover {
+      transform: translateY(-5px);
+      border-color: rgba(255, 255, 255, 0.78);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .member-top {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      min-width: 0;
+    }
+
+    .avatar {
+      display: grid;
+      flex: 0 0 64px;
+      width: 64px;
+      height: 64px;
+      place-items: center;
+      font-size: 2rem;
+      background: var(--avatar-bg);
+      border: 2px solid rgba(255, 255, 255, 0.72);
+      border-radius: 999px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.46), 0 12px 30px rgba(86, 56, 82, 0.18);
+    }
+
+    .member-name {
+      min-width: 0;
+    }
+
+    .member-name h3 {
+      margin: 0 0 5px;
+      color: #4e3241;
+      font-size: 1.28rem;
+      letter-spacing: 0;
+    }
+
+    .role {
+      margin: 0;
+      color: #7f6575;
+      font-size: 0.9rem;
+      font-weight: 700;
+      line-height: 1.45;
+    }
+
+    .signature {
+      margin: 0;
+      color: #5e4252;
+      font-size: 1rem;
+      line-height: 1.72;
+    }
+
+    .latest {
+      align-self: end;
+      display: grid;
+      gap: 7px;
+      padding: 13px 14px;
+      color: #66485a;
+      background: rgba(255, 255, 255, 0.34);
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      border-radius: 8px;
+    }
+
+    .latest-label {
+      color: var(--muted);
+      font-size: 0.76rem;
+      font-weight: 800;
+    }
+
+    .latest-title {
+      margin: 0;
+      font-size: 0.94rem;
+      line-height: 1.52;
+    }
+
+    .footer {
+      display: grid;
+      gap: 14px;
+      margin-top: 32px;
+      padding: 22px 4px 0;
+      text-align: center;
+    }
+
+    .stats {
+      width: fit-content;
+      max-width: 100%;
+      margin: 0 auto;
+      padding: 14px 18px;
+      color: #5e4052;
+      font-weight: 800;
+      line-height: 1.55;
+      background: var(--paper-strong);
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      border-radius: 8px;
+      box-shadow: 0 14px 38px rgba(97, 65, 89, 0.15);
+      backdrop-filter: blur(18px);
+    }
+
+    .tiny-note {
+      margin: 0;
+      color: rgba(89, 62, 78, 0.72);
+      font-size: 0.9rem;
+    }
+
+    @keyframes floatGently {
+      0%,
+      100% {
+        transform: translate3d(0, 0, 0) rotate(-4deg);
+      }
+      50% {
+        transform: translate3d(0, -16px, 0) rotate(5deg);
+      }
+    }
+
+    @media (max-width: 720px) {
+      .page {
+        width: min(100% - 24px, var(--max-width));
+        padding-top: 32px;
+      }
+
+      .hero {
+        margin-bottom: 28px;
+      }
+
+      .section-heading {
+        align-items: start;
+      }
+
+      .member-card {
+        min-height: auto;
+        padding: 20px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+
+    @supports not (backdrop-filter: blur(1px)) {
+      .eyebrow,
+      .mood-chip,
+      .member-card,
+      .stats {
+        background: rgba(255, 250, 247, 0.88);
+      }
+    }
+  </style>
+</head>
+<body>
+  <span class="ambient ambient--one" aria-hidden="true">✦</span>
+  <span class="ambient ambient--two" aria-hidden="true">♡</span>
+  <span class="ambient ambient--three" aria-hidden="true">✧</span>
+
+  <main class="page">
+    <header class="hero">
+      <div class="eyebrow">✦ 11人的秘密日记基地 ✦</div>
+      <h1>secret base♡</h1>
+      <p class="subtitle">11人的秘密日记基地 / 只属于我们的共享日记</p>
+      <p class="description">这里是只属于我们的秘密基地，记录着11人共同书写的日记与故事。</p>
+      <div class="mood-row" aria-label="今日心情">
+        <span class="mood-chip">今日心情：把一颗星星放进口袋</span>
+        <span class="mood-chip">秘密温度：微甜</span>
+      </div>
+    </header>
+
+    <section class="member-section" aria-labelledby="member-title">
+      <div class="section-heading">
+        <div>
+          <h2 id="member-title">成员日记签</h2>
+          <p id="member-count">正在整理秘密名单...</p>
+        </div>
+      </div>
+      <div class="member-grid" id="memberGrid"></div>
+    </section>
+
+    <footer class="footer">
+      <div class="stats" id="diaryStats">📖 至今写下了 215 篇秘密日记</div>
+      <p class="tiny-note">愿每一次翻页，都能遇见一点温柔。</p>
+    </footer>
+  </main>
+
+  <script>
+    /*
+      维护说明：
+      1. 只需要修改下面 members 数组，就能更新网页上展示的成员。
+      2. 每一位成员是一个独立对象，复制一个对象并修改字段，就能添加新成员。
+      3. 删除某个对象即可移除成员；数组长度变化后，页面会自动重新计算人数与统计。
+
+      字段说明：
+      - name：姓名 / 昵称
+      - avatar：头像中显示的 Emoji 或首字母
+      - avatarBg：头像圆形背景色，建议使用 CSS 渐变
+      - accent：卡片顶部的小色条颜色
+      - role：简短定位 / 角色
+      - signature：个人签名 / 一句话简介
+      - latest：最近日记片段或标题
+      - diaryCount：该成员写下的日记数量，用于底部统计
+    */
+    const members = [
+      {
+        name: "小星",
+        avatar: "🌟",
+        avatarBg: "linear-gradient(135deg, #ffe69a, #ffb7d5)",
+        accent: "#f4a6bd",
+        role: "摘星诗人",
+        signature: "把星光装进日记本里，留给夜晚慢慢读。",
+        latest: "《晚风借走了一颗星》 昨天 23:18",
+        diaryCount: 24
+      },
+      {
+        name: "云朵",
+        avatar: "☁️",
+        avatarBg: "linear-gradient(135deg, #d9f0ff, #f8d7ff)",
+        accent: "#b8a7ee",
+        role: "晴雨收藏家",
+        signature: "负责把阴天写得软一点，也把晴天折进页角。",
+        latest: "《云影落在第12页》 今天 08:06",
+        diaryCount: 18
+      },
+      {
+        name: "薄荷",
+        avatar: "🌿",
+        avatarBg: "linear-gradient(135deg, #bff3d5, #d7f4ff)",
+        accent: "#82c8a6",
+        role: "清醒系写手",
+        signature: "用很轻的句子，给混乱的心开一扇窗。",
+        latest: "《冰镇汽水和没说完的话》 周二 21:40",
+        diaryCount: 21
+      },
+      {
+        name: "山茶",
+        avatar: "🌺",
+        avatarBg: "linear-gradient(135deg, #ffd5cc, #f8a7bf)",
+        accent: "#e989a6",
+        role: "回忆保管员",
+        signature: "把重要的小事别在胸前，像一枚温热的花扣。",
+        latest: "《第43页夹着一片银杏》 昨天 19:52",
+        diaryCount: 17
+      },
+      {
+        name: "鹿溪",
+        avatar: "🦌",
+        avatarBg: "linear-gradient(135deg, #ffd9a8, #c6e7cf)",
+        accent: "#c9a26b",
+        role: "森林漫游者",
+        signature: "沿着溪水写下梦的路线，醒来还能找到入口。",
+        latest: "《昨晚又梦见那片向日葵海》 今天 00:11",
+        diaryCount: 22
+      },
+      {
+        name: "海音",
+        avatar: "🌊",
+        avatarBg: "linear-gradient(135deg, #a9ddff, #d9cdfb)",
+        accent: "#83aee8",
+        role: "潮汐记录者",
+        signature: "把每一次沉默都听成海，慢慢写给明天。",
+        latest: "《玻璃瓶里的蓝色黄昏》 周一 22:27",
+        diaryCount: 20
+      },
+      {
+        name: "柚月",
+        avatar: "🌙",
+        avatarBg: "linear-gradient(135deg, #ffe6a8, #ffc9a8)",
+        accent: "#f3b06f",
+        role: "月光收信人",
+        signature: "喜欢在睡前写一句话，替白天轻轻收尾。",
+        latest: "《月亮在杯底晃了一下》 昨天 22:03",
+        diaryCount: 19
+      },
+      {
+        name: "浆果",
+        avatar: "🍓",
+        avatarBg: "linear-gradient(135deg, #ffc2d1, #ffe1a8)",
+        accent: "#e87791",
+        role: "甜味观察员",
+        signature: "把今天最甜的一秒钟，偷偷留在共享日记里。",
+        latest: "《草莓酱涂满周末》 今天 12:24",
+        diaryCount: 16
+      },
+      {
+        name: "风早",
+        avatar: "🍃",
+        avatarBg: "linear-gradient(135deg, #c5f1de, #f7dfb8)",
+        accent: "#89bd91",
+        role: "深夜灵感捕捉者",
+        signature: "等风经过窗边，就把没来由的心动记下来。",
+        latest: "《凌晨两点的纸飞机》 今天 02:14",
+        diaryCount: 23
+      },
+      {
+        name: "眠羊",
+        avatar: "🐑",
+        avatarBg: "linear-gradient(135deg, #fff0c9, #dbcfff)",
+        accent: "#b99be6",
+        role: "梦境记录者",
+        signature: "数到第十一只羊时，梦会替我续写下一段。",
+        latest: "《枕头下面藏着一座小岛》 周三 07:35",
+        diaryCount: 15
+      },
+      {
+        name: "织夏",
+        avatar: "🧵",
+        avatarBg: "linear-gradient(135deg, #ffc8b8, #c4d8ff)",
+        accent: "#de8f83",
+        role: "季节缝补师",
+        signature: "用细细的线，把夏天和我们缝在同一页。",
+        latest: "《风铃声落在窗台》 昨天 17:46",
+        diaryCount: 20
+      }
+    ];
+
+    function escapeHTML(value) {
+      return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    function renderMembers() {
+      const grid = document.getElementById("memberGrid");
+      const countText = document.getElementById("member-count");
+      const stats = document.getElementById("diaryStats");
+      const totalDiaries = members.reduce((sum, member) => sum + Number(member.diaryCount || 0), 0);
+
+      grid.innerHTML = members.map((member) => `
+        <article class="member-card" style="--avatar-bg: ${member.avatarBg}; --accent: ${member.accent};">
+          <div class="member-top">
+            <div class="avatar" aria-hidden="true">${escapeHTML(member.avatar)}</div>
+            <div class="member-name">
+              <h3>${escapeHTML(member.name)}</h3>
+              <p class="role">${escapeHTML(member.role)}</p>
+            </div>
+          </div>
+          <p class="signature">${escapeHTML(member.signature)}</p>
+          <div class="latest">
+            <span class="latest-label">最近日记</span>
+            <p class="latest-title">${escapeHTML(member.latest)}</p>
+          </div>
+        </article>
+      `).join("");
+
+      countText.textContent = `${members.length} 位成员正在这里交换秘密与日常`;
+      stats.textContent = `📖 至今写下了 ${totalDiaries} 篇秘密日记`;
+    }
+
+    document.addEventListener("DOMContentLoaded", renderMembers);
+  </script>
+</body>
+</html>
