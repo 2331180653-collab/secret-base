@@ -551,6 +551,69 @@
       line-height: 1.62;
     }
 
+    .guestbook-section {
+      display: grid;
+      gap: 16px;
+      margin-top: 34px;
+    }
+
+    .guestbook-card {
+      padding: 22px;
+      overflow: hidden;
+      background: rgba(255, 250, 247, 0.58);
+      border: 1px solid rgba(255, 255, 255, 0.58);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(22px) saturate(1.16);
+    }
+
+    .guestbook-intro {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+      padding-bottom: 14px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.52);
+    }
+
+    .guestbook-note {
+      margin: 0;
+      color: #6d4d5f;
+      font-size: 0.96rem;
+      line-height: 1.65;
+    }
+
+    .guestbook-link {
+      display: inline-flex;
+      align-items: center;
+      min-height: 36px;
+      padding: 8px 13px;
+      color: #fffaf8;
+      font-size: 0.88rem;
+      font-weight: 900;
+      text-decoration: none;
+      background: #8b5e76;
+      border-radius: 999px;
+      box-shadow: 0 12px 30px rgba(99, 65, 91, 0.22);
+      transition: transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .guestbook-link:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 16px 36px rgba(99, 65, 91, 0.28);
+    }
+
+    .guestbook-link:focus-visible {
+      outline: 3px solid rgba(108, 72, 94, 0.42);
+      outline-offset: 4px;
+    }
+
+    .utterances {
+      max-width: 100%;
+    }
+
     .footer {
       display: grid;
       gap: 14px;
@@ -764,6 +827,7 @@
       .member-card,
       .timeline-item,
       .memory-card,
+      .guestbook-card,
       .stats {
         background: rgba(255, 250, 247, 0.88);
       }
@@ -830,6 +894,37 @@
           </div>
         </div>
         <div class="memory-grid" id="memoryGrid"></div>
+      </div>
+    </section>
+
+    <section class="guestbook-section" aria-labelledby="guestbook-title">
+      <div class="story-title">
+        <div>
+          <h2 id="guestbook-title">基地留言簿</h2>
+          <p>把想说的话留在这里，像夹进日记本的一张小纸条</p>
+        </div>
+      </div>
+      <div class="guestbook-card">
+        <div class="guestbook-intro">
+          <p class="guestbook-note">登录 GitHub 后可以留下公开留言；你可以在 GitHub Issues 里管理这些留言。</p>
+          <a class="guestbook-link" href="https://github.com/2331180653-collab/secret-base/issues" target="_blank" rel="noopener">管理留言</a>
+        </div>
+        <!--
+          留言板维护说明：
+          1. 这个留言板使用 utterances，把留言保存到 GitHub Issues。
+          2. 第一次使用前，需要给仓库安装 utterances App：https://github.com/apps/utterances
+          3. 如果你的仓库地址变了，请把下面 repo="2331180653-collab/secret-base" 改成“你的用户名/你的仓库名”。
+          4. 留言不是匿名的，访问者需要登录 GitHub；真正免登录留言需要接入数据库或第三方表单服务。
+        -->
+        <script
+          src="https://utteranc.es/client.js"
+          repo="2331180653-collab/secret-base"
+          issue-term="pathname"
+          label="guestbook"
+          theme="github-light"
+          crossorigin="anonymous"
+          async>
+        </script>
       </div>
     </section>
 
